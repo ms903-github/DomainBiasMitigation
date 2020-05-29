@@ -9,3 +9,8 @@ import models.celeba_domain_discriminative
 import models.celeba_domain_independent
 import models.celeba_uniconf_adv
 import models.celeba_gradproj_adv
+import models.imdb_core
+import models.imdb_domain_discriminative
+import models.imdb_domain_independent
+import models.imdb_uniconf_adv
+import models.imdb_gradproj_adv

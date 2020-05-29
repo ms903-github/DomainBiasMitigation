@@ -21,7 +21,7 @@ class ImdbUniConfAdv(ImdbModel):
         """Define the network"""
         
         # self.base_network = basenet.ResNet18_base().to(self.device)
-        self.base_network = basenet.BaseResNet18_for_imdb().to(self.device)
+        self.base_network = basenet.Resnet50_base(True, hidden_size=512).to(self.device)
         # Two fc layers on top of the base network, one for target classification,
         # one for domain classification
         self.class_network = nn.Linear(512, opt['output_dim']).to(self.device)

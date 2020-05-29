@@ -50,6 +50,14 @@ def collect_args():
                                  'celeba_domain_independent',
                                  'celeba_uniconf_adv',
                                  'celeba_gradproj_adv',    
+
+                                 # imdb
+                                 'imdb_baseline', 
+                                 'imdb_sampling',
+                                 'imdb_domain_discriminative',
+                                 'imdb_domain_independent',
+                                 'imdb_uniconf_adv',
+                                 'imdb_gradproj_adv',
                                 ])
     
     parser.add_argument('--experiment_name', type=str, default='cifar_color')
@@ -79,6 +87,22 @@ def create_exerpiment_setting(opt):
             'lr': 0.1,
             'momentum': 0.9,
             'weight_decay': 5e-4,
+        }
+        opt['optimizer_setting'] = optimizer_setting
+
+    elif opt['experiment'].startswith('imdb'):
+        opt['device'] = torch.device('cuda' if opt['cuda'] else 'cpu')
+        opt['print_freq'] = 50
+        opt['batch_size'] = 32
+        opt['total_epochs'] = 200
+        opt['save_folder'] = os.path.join('record/'+opt['experiment'], 
+                                          opt['experiment_name'])
+        utils.creat_folder(opt['save_folder'])
+    
+        optimizer_setting = {
+            'optimizer': torch.optim.Adam,
+            'lr': 1e-5,
+            'weight_decay': 0,
         }
         opt['optimizer_setting'] = optimizer_setting
         
@@ -495,5 +519,87 @@ def create_exerpiment_setting(opt):
         opt['training_ratio'] = 3
         opt['alpha'] = 1.
         model = models.celeba_gradproj_adv.CelebaGradProjAdv(opt)
+
+    #####  imdb   ########
+
+    elif opt['experiment'] == 'imdb_baseline':
+        opt['output_dim'] = 8
+        data_setting = {
+            'train_data_path': './data/imdb_tr_soft.txt',
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_core.ImdbModel(opt)
         
+    elif opt['experiment'] == 'imdb_domain_discriminative':
+        opt['output_dim'] = 16
+        opt['prior_shift_weight'] = [1/4, 1/4, 1/4, 1/4, 1/6, 1/6, 1/6, 1/6]+\
+                                    [1/6, 1/6, 1/6, 1/6, 1/4, 1/4, 1/4, 1/4]
+        data_setting = {
+            'train_data_path': './data/imdb_tr_soft.txt',
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_domain_discriminative.ImdbDomainDiscriminative(opt)
+        
+    elif opt['experiment'] == 'imdb_domain_independent':
+        opt['output_dim'] = 16
+        data_setting = {
+            'train_data_path': './data/imdb_tr_soft.txt',
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_domain_independent.ImdbDomainIndependent(opt)
+        
+    elif opt['experiment'] == 'imdb_uniconf_adv':
+        opt['output_dim'] = 8
+        opt['total_epochs'] = 500
+        opt['training_ratio'] = 3
+        opt['alpha'] = 1.
+        
+        data_setting = {
+            'train_data_path': './data/imdb_tr_soft.txt',
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        
+        optimizer_setting = {
+            'optimizer': torch.optim.Adam,
+            'lr': 1e-4,
+            'weight_decay': 3e-4,
+        }
+        opt['optimizer_setting'] = optimizer_setting
+        
+        model = models.imdb_uniconf_adv.ImdbUniConfAdv(opt)
+        
+    elif opt['experiment'] == 'imdb_gradproj_adv':
+        opt['output_dim'] = 8
+        opt['total_epochs'] = 500
+        opt['training_ratio'] = 3
+        opt['alpha'] = 1.
+        
+        data_setting = {
+            'train_data_path': './data/imdb_tr_soft.txt',
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        optimizer_setting = {
+            'optimizer': torch.optim.Adam,
+            'lr': 1e-4,
+            'weight_decay': 3e-4,
+        }
+        opt['optimizer_setting'] = optimizer_setting
+        
+        model = models.imdb_gradproj_adv.ImdbGradProjAdv(opt)
+    
     return model, opt

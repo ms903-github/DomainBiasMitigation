@@ -29,7 +29,7 @@ class ImdbModel():
         """Define the network"""
         
         # self.network = basenet.ResNet18(num_classes=opt['output_dim']).to(self.device)
-        self.network = basenet.ResNet18_for_imdb(num_classes=opt['output_dim']).to(self.device)
+        self.network = basenet.ResNet50(n_classes=opt['output_dim'], pretrained=True).to(self.device)
     def forward(self, x):
         out, feature = self.network(x)
         return out, feature

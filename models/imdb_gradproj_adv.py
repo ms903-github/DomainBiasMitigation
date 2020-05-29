@@ -21,7 +21,7 @@ class ImdbGradProjAdv(ImdbModel):
         """Define the network"""
         
         # self.class_network = basenet.ResNet18(opt['output_dim']).to(self.device)
-        self.class_network = basenet.ResNet18_for_imdb(opt['output_dim']).to(self.device)
+        self.class_network = basenet.ResNet50(n_classes=opt['output_dim'], pretrained=True).to(self.device)
         self.domain_network = nn.Linear(opt['output_dim'], 2).to(self.device)
         
     def set_data(self, opt):
@@ -51,6 +51,7 @@ class ImdbGradProjAdv(ImdbModel):
             ])
 
         transform_test = transforms.Compose([
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
             # normalize,
         ])

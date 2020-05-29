@@ -74,6 +74,96 @@ class CifarDatasetWithDomain(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.class_label)
 
+class ImdbDataset(torch.utils.data.Dataset):
+    """Imdb dataloader, output image and target"""
+    
+    def __init__(self, data_path, transform=None):
+        with open(data_path, "rb") as f:
+            lines = f.readlines()
+            pathlist, labellist = [], []
+            for line in lines:
+                path, label, gen = line.split()
+                pathlist.append(path)
+                labellist.append(label)
+        self.pathlist = pathlist
+        self.labellist = labellist
+        self.transform = transform
+
+    def __getitem__(self, index):
+        path = self.pathlist[index]
+        img = Image.open(path).convert("RGB")
+        label = int(self.labellist[index])
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, label
+
+    def __len__(self):
+        return len(self.labellist)
+    
+class ImdbDatasetWithDomain(torch.utils.data.Dataset):
+    """Imdb dataloader, output image, class target and domain for this sample"""
+    
+    def __init__(self, image_path, transform=None):
+        with open(data_path, "rb") as f:
+            lines = f.readlines()
+            pathlist, labellist, genlist = [], [], []
+            for line in lines:
+                path, label, gen = line.split()
+                pathlist.append(path)
+                labellist.append(label)
+                genlist.append(gen)
+        self.pathlist = pathlist
+        self.labellist = labellist
+        self.genlist = genlist
+        self.transform = transform
+
+    def __getitem__(self, index):
+        ipath = self.pathlist[index]
+        img = Image.open(path).convert("RGB")
+        label = int(self.labellist[index])
+        gen = int(self.genlist[index])
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, label, gen
+
+    def __len__(self):
+        return len(self.class_label)
+
+class ImdbDatasetFor16cls(torch.utils.data.Dataset):
+    """Imdb dataloader, output image and target"""
+    
+    def __init__(self, data_path, transform=None):
+        with open(data_path, "rb") as f:
+            lines = f.readlines()
+            pathlist, labellist = [], []
+            for line in lines:
+                path, label, gen = line.split()
+                pathlist.append(path)
+                if int(gen) == 1:
+                    labellist.append(int(label))
+                elif int(gen) == 0:
+                    labellist.append(int(label) + 7)
+        self.pathlist = pathlist
+        self.labellist = labellist
+        self.transform = transform
+
+    def __getitem__(self, index):
+        path = self.pathlist[index]
+        img = Image.open(path).convert("RGB")
+        label = self.labellist[index]
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, label
+
+    def __len__(self):
+        return len(self.labellist)
+
 class CelebaDataset(torch.utils.data.Dataset):
     """Celeba dataloader, output image and target"""
     
