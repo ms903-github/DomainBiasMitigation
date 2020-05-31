@@ -97,12 +97,14 @@ class ImdbDomainIndependent(ImdbModel):
         features = torch.cat(feature_list, dim=0)
         targets = torch.cat(target_list, dim=0)
         
-        accuracy_conditional = self.compute_accuracy_conditional(outputs, targets, test_on_male)
-        accuracy_sum_out = self.compute_accuracy_sum_out(outputs, targets)
+        accuracy_conditional, pred1 = self.compute_accuracy_conditional(outputs, targets, test_on_male)
+        accuracy_sum_out, pred2 = self.compute_accuracy_sum_out(outputs, targets)
         
         test_result = {
             'accuracy_conditional': accuracy_conditional,
             'accuracy_sum_out': accuracy_sum_out,
+            'prediction_conditional': pred1,
+            'prediction_sum_out': pred2,
             'outputs': outputs.cpu().numpy(),
             'features': features.cpu().numpy()
         }
@@ -119,7 +121,7 @@ class ImdbDomainIndependent(ImdbModel):
             outputs = outputs[:, class_num:]
         predictions = np.argmax(outputs, axis=1)
         accuracy = (predictions == targets).mean() * 100.
-        return accuracy
+        return accuracy, predictions
     
     def compute_accuracy_sum_out(self, outputs, targets):
         outputs = outputs.cpu().numpy()
@@ -128,7 +130,7 @@ class ImdbDomainIndependent(ImdbModel):
         class_num = outputs.shape[1] // 2
         predictions = np.argmax(outputs[:, :class_num] + outputs[:, class_num:], axis=1)
         accuracy = (predictions == targets).mean() * 100.
-        return accuracy
+        return accuracy, predictions
 
     def test(self):
         # Test and save the result

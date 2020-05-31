@@ -95,6 +95,13 @@ class ImdbGradProjAdv(ImdbModel):
             'epoch': self.epoch
         }
         return state_dict
+
+    def load_state_dict(self, state_dict):
+        self.class_network.load_state_dict(state_dict['class_network'])
+        self.domain_network.load_state_dict(state_dict['domain_network'])
+        self.class_optimizer.load_state_dict(state_dict['class_optimizer'])
+        self.domain_optimizer.load_state_dict(state_dict['domain_optimizer'])
+        self.epoch = state_dict['epoch']
             
     def  _train(self, loader):
         """Train the model for one epoch"""
@@ -232,6 +239,7 @@ class ImdbGradProjAdv(ImdbModel):
         
     def test(self):
         # Test and save the result
+        self.load_state_dict(torch.load(os.path.join(self.save_path, 'ckpt.pth')))
         test_male_result = self._test(self.test_male_loader)
         test_female_result = self._test(self.test_female_loader)
         utils.save_pkl(test_male_result, os.path.join(self.save_path, 'test_male_result.pkl'))

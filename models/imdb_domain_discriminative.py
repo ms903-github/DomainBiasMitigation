@@ -91,14 +91,18 @@ class ImdbDomainDiscriminative(ImdbModel):
         features = torch.cat(feature_list, dim=0)
         targets = torch.cat(target_list, dim=0)
         
-        accuracy_sum_prob_wo_prior_shift = self.compute_accuracy_sum_prob_wo_prior_shift(outputs, targets)
-        accuracy_sum_prob_w_prior_shift = self.compute_accuracy_sum_prob_w_prior_shift(outputs, targets)
-        accuracy_max_prob_w_prior_shift = self.compute_accuracy_max_prob_w_prior_shift(outputs, targets)
+        accuracy_sum_prob_wo_prior_shift, pred1 = self.compute_accuracy_sum_prob_wo_prior_shift(outputs, targets)
+        accuracy_sum_prob_w_prior_shift, pred2 = self.compute_accuracy_sum_prob_w_prior_shift(outputs, targets)
+        accuracy_max_prob_w_prior_shift, pred3 = self.compute_accuracy_max_prob_w_prior_shift(outputs, targets)
         
         test_result = {
             'accuracy_sum_prob_wo_prior_shift': accuracy_sum_prob_wo_prior_shift,
             'accuracy_sum_prob_w_prior_shift': accuracy_sum_prob_w_prior_shift,
             'accuracy_max_prob_w_prior_shift': accuracy_max_prob_w_prior_shift,
+            'prediction_sum_prob_wo_prior_shift': pred1,
+            'prediction_sum_prob_w_prior_shift': pred2,
+            'prediction_max_prob_w_prior_shift': pred3,
+            'targets': target_list,
             'outputs': outputs.cpu().numpy(),
             'features': features.cpu().numpy()
         }
@@ -110,7 +114,7 @@ class ImdbDomainDiscriminative(ImdbModel):
     
         predictions = np.argmax(probs[:, :8] + probs[:, 8:], axis=1)
         accuracy = (predictions == targets).mean() * 100.
-        return accuracy
+        return accuracy, predictions
     
     def compute_accuracy_sum_prob_w_prior_shift(self, outputs, targets):
         probs = F.softmax(outputs, dim=1).cpu().numpy() * self.prior_shift_weight
@@ -118,7 +122,7 @@ class ImdbDomainDiscriminative(ImdbModel):
         
         predictions = np.argmax(probs[:, :8] + probs[:, 8:], axis=1)
         accuracy = (predictions == targets).mean() * 100.
-        return accuracy
+        return accuracy, predictions
     
     def compute_accuracy_max_prob_w_prior_shift(self, outputs, targets):
         probs = F.softmax(outputs, dim=1).cpu().numpy() * self.prior_shift_weight
@@ -126,7 +130,7 @@ class ImdbDomainDiscriminative(ImdbModel):
         
         predictions = np.argmax(np.stack((probs[:, :8], probs[:, 8:])).max(axis=0), axis=1)
         accuracy = (predictions == targets).mean() * 100.
-        return accuracy
+        return accuracy, predictions
 
     def test(self):
         # Test and save the result

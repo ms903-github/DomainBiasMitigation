@@ -105,7 +105,7 @@ class ImdbDataset(torch.utils.data.Dataset):
 class ImdbDatasetWithDomain(torch.utils.data.Dataset):
     """Imdb dataloader, output image, class target and domain for this sample"""
     
-    def __init__(self, image_path, transform=None):
+    def __init__(self, data_path, transform=None):
         with open(data_path, "rb") as f:
             lines = f.readlines()
             pathlist, labellist, genlist = [], [], []
@@ -120,7 +120,7 @@ class ImdbDatasetWithDomain(torch.utils.data.Dataset):
         self.transform = transform
 
     def __getitem__(self, index):
-        ipath = self.pathlist[index]
+        path = self.pathlist[index]
         img = Image.open(path).convert("RGB")
         label = int(self.labellist[index])
         gen = int(self.genlist[index])
@@ -131,7 +131,7 @@ class ImdbDatasetWithDomain(torch.utils.data.Dataset):
         return img, label, gen
 
     def __len__(self):
-        return len(self.class_label)
+        return len(self.labellist)
 
 class ImdbDatasetFor16cls(torch.utils.data.Dataset):
     """Imdb dataloader, output image and target"""

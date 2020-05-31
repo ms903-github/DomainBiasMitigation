@@ -21,7 +21,7 @@ class ImdbUniConfAdv(ImdbModel):
         """Define the network"""
         
         # self.base_network = basenet.ResNet18_base().to(self.device)
-        self.base_network = basenet.Resnet50_base(True, hidden_size=512).to(self.device)
+        self.base_network = basenet.ResNet50_base(True, hidden_size=512).to(self.device)
         # Two fc layers on top of the base network, one for target classification,
         # one for domain classification
         self.class_network = nn.Linear(512, opt['output_dim']).to(self.device)
@@ -105,6 +105,16 @@ class ImdbUniConfAdv(ImdbModel):
         }
         return state_dict
     
+    def load_state_dict(self, state_dict):
+        self.base_network.load_state_dict(state_dict['base_network'])
+        self.class_network.load_state_dict(state_dict['class_network'])
+        self.domain_network.load_state_dict(state_dict['domain_network'])
+        self.base_optimizer.load_state_dict(state_dict['base_optimizer'])
+        self.class_optimizer.load_state_dict(state_dict['class_optimizer'])
+        self.domain_optimizer.load_state_dict(state_dict['domain_optimizer'])
+        self.epoch = state_dict['epoch']
+    
+
     def  _train(self, loader):
         """Train the model for one epoch"""
         
@@ -237,6 +247,7 @@ class ImdbUniConfAdv(ImdbModel):
         
     def test(self):
         # Test and save the result
+        self.load_state_dict(torch.load(os.path.join(self.save_path, 'ckpt.pth')))
         test_male_result = self._test(self.test_male_loader)
         test_female_result = self._test(self.test_female_loader)
         utils.save_pkl(test_male_result, os.path.join(self.save_path, 'test_male_result.pkl'))

@@ -182,6 +182,7 @@ class ImdbModel():
         output_list = []
         feature_list = []
         predict_list = []
+        gt_list = []
         with torch.no_grad():
             for i, (images, targets) in enumerate(loader):
                 images, targets = images.to(self.device), targets.to(self.device)
@@ -193,12 +194,14 @@ class ImdbModel():
                 total += targets.size(0)
                 correct += predicted.eq(targets).sum().item()
 
+                gt_list.extend(targets.tolist())
                 predict_list.extend(predicted.tolist())
                 output_list.append(outputs.cpu().numpy())
                 feature_list.append(features.cpu().numpy())
 
         test_result = {
             'accuracy': correct*100. / total,
+            'gt_labels': gt_list,
             'predict_labels': predict_list,
             'outputs': np.vstack(output_list),
             'features': np.vstack(feature_list)
@@ -211,6 +214,7 @@ class ImdbModel():
 
     def test(self):
         # Test and save the result
+        self.network.load_state_dict(torch.load(os.path.join(self.save_path, 'ckpt.pth'))['model'])
         test_male_result = self._test(self.test_male_loader)
         test_female_result = self._test(self.test_female_loader)
         utils.save_pkl(test_male_result, os.path.join(self.save_path, 'test_male_result.pkl'))

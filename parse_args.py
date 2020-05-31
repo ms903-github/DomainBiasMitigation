@@ -63,6 +63,7 @@ def collect_args():
     parser.add_argument('--experiment_name', type=str, default='cifar_color')
     parser.add_argument('--no_cuda', dest='cuda', action='store_false')
     parser.add_argument('--random_seed', type=int, default=0)
+    parser.add_argument('--test_mode', type=bool, default='False')
     parser.set_defaults(cuda=True)
 
     opt = vars(parser.parse_args())
@@ -70,7 +71,6 @@ def collect_args():
     return opt
 
 def create_exerpiment_setting(opt):
-    opt['test_mode'] = False
     
     # common experiment setting
     if opt['experiment'].startswith('cifar'):
@@ -93,7 +93,7 @@ def create_exerpiment_setting(opt):
     elif opt['experiment'].startswith('imdb'):
         opt['device'] = torch.device('cuda' if opt['cuda'] else 'cpu')
         opt['print_freq'] = 50
-        opt['batch_size'] = 32
+        opt['batch_size'] = 8
         opt['total_epochs'] = 200
         opt['save_folder'] = os.path.join('record/'+opt['experiment'], 
                                           opt['experiment_name'])
