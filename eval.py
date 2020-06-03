@@ -1,8 +1,8 @@
 import utils
 
 mode = "domain_discriminative"
-m_load_path = "record/imdb_domain_discriminative/cifar_color/test_male_result.pkl"
-f_load_path = "record/imdb_domain_discriminative/cifar_color/test_female_result.pkl"
+m_load_path = "record/imdb_domain_discriminative/hard_core07/test_male_result.pkl"
+f_load_path = "record/imdb_domain_discriminative/hard_core07/test_female_result.pkl"
 
 m_loaded = utils.load_pkl(m_load_path)
 f_loaded = utils.load_pkl(f_load_path)

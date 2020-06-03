@@ -146,7 +146,7 @@ class ImdbDatasetFor16cls(torch.utils.data.Dataset):
                 if int(gen) == 1:
                     labellist.append(int(label))
                 elif int(gen) == 0:
-                    labellist.append(int(label) + 7)
+                    labellist.append(int(label) + 8)
         self.pathlist = pathlist
         self.labellist = labellist
         self.transform = transform

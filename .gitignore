@@ -6,11 +6,3 @@ record
 models/__pychache__
 __pychache__/
 *.pyc
-__pycache__/parse_args.cpython-36.pyc
-models/__pycache__/__init__.cpython-36.pyc
-models/__pycache__/dataloader.cpython-36.pyc
-models/__pycache__/imdb_core.cpython-36.pyc
-models/__pycache__/imdb_domain_discriminative.cpython-36.pyc
-models/__pycache__/imdb_domain_independent.cpython-36.pyc
-models/__pycache__/imdb_gradproj_adv.cpython-36.pyc
-models/__pycache__/imdb_uniconf_adv.cpython-36.pyc

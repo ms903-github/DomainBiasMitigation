@@ -63,7 +63,7 @@ def collect_args():
     parser.add_argument('--experiment_name', type=str, default='cifar_color')
     parser.add_argument('--no_cuda', dest='cuda', action='store_false')
     parser.add_argument('--random_seed', type=int, default=0)
-    parser.add_argument('--test_mode', type=bool, default='False')
+    parser.add_argument('--test_mode', type=bool, default=False)
     parser.set_defaults(cuda=True)
 
     opt = vars(parser.parse_args())
@@ -525,7 +525,7 @@ def create_exerpiment_setting(opt):
     elif opt['experiment'] == 'imdb_baseline':
         opt['output_dim'] = 8
         data_setting = {
-            'train_data_path': './data/imdb_tr_soft.txt',
+            'train_data_path': './data/imdb_tr_hard08.txt',
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -538,7 +538,7 @@ def create_exerpiment_setting(opt):
         opt['prior_shift_weight'] = [1/4, 1/4, 1/4, 1/4, 1/6, 1/6, 1/6, 1/6]+\
                                     [1/6, 1/6, 1/6, 1/6, 1/4, 1/4, 1/4, 1/4]
         data_setting = {
-            'train_data_path': './data/imdb_tr_soft.txt',
+            'train_data_path': './data/imdb_tr_hard08.txt',
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -549,7 +549,7 @@ def create_exerpiment_setting(opt):
     elif opt['experiment'] == 'imdb_domain_independent':
         opt['output_dim'] = 16
         data_setting = {
-            'train_data_path': './data/imdb_tr_soft.txt',
+            'train_data_path': './data/imdb_tr_hard08.txt',
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -564,7 +564,7 @@ def create_exerpiment_setting(opt):
         opt['alpha'] = 1.
         
         data_setting = {
-            'train_data_path': './data/imdb_tr_soft.txt',
+            'train_data_path': './data/imdb_tr_hard08.txt',
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -587,7 +587,7 @@ def create_exerpiment_setting(opt):
         opt['alpha'] = 1.
         
         data_setting = {
-            'train_data_path': './data/imdb_tr_soft.txt',
+            'train_data_path': './data/imdb_tr_hard08.txt',
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True

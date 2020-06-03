@@ -107,6 +107,41 @@ class ImdbDomainDiscriminative(ImdbModel):
             'features': features.cpu().numpy()
         }
         return test_result
+
+    def __test(self, loader):
+        """Test the model performance"""
+        
+        self.network.eval()
+
+        total = 0
+        correct = 0
+        test_loss = 0
+        output_list = []
+        feature_list = []
+        target_list = []
+        with torch.no_grad():
+            for i, (images, targets) in enumerate(loader):
+                images, targets = images.to(self.device), targets.to(self.device)
+                outputs, features = self.forward(images)
+                loss = self._criterion(outputs, targets)
+                test_loss += loss.item()
+
+                output_list.append(outputs)
+                feature_list.append(features)
+                target_list.append(targets)
+                
+        outputs = torch.cat(output_list, dim=0)
+        features = torch.cat(feature_list, dim=0)
+        targets = torch.cat(target_list, dim=0)
+        probs = F.softmax(outputs, dim=1).cpu().numpy()
+        predictions = np.argmax(probs, axis=1)
+        writer = []
+        writer.append("pred" + " " + "gt" + "\n")
+        for pred, tgt in zip(predictions, targets):
+            writer.append(str(int(pred)) + " " + str(int(tgt)) + "\n")
+
+        with open(os.path.join(self.save_path, "16pred.txt"), "w") as f:
+            f.writelines(writer)
     
     def compute_accuracy_sum_prob_wo_prior_shift(self, outputs, targets):
         probs = F.softmax(outputs, dim=1).cpu().numpy()
@@ -136,6 +171,7 @@ class ImdbDomainDiscriminative(ImdbModel):
         # Test and save the result
         state_dict = torch.load(os.path.join(self.save_path, 'ckpt.pth'))
         self.load_state_dict(state_dict)
+        self.__test(self.train_loader)
         test_male_result = self._test(self.test_male_loader)
         test_female_result = self._test(self.test_female_loader)
         utils.save_pkl(test_male_result, os.path.join(self.save_path, 'test_male_result.pkl'))

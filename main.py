@@ -5,6 +5,7 @@ def main(model, opt):
     utils.set_random_seed(opt['random_seed'])
     
     if not opt['test_mode']:
+        print("-----start training--------")
         for epoch in range(opt['total_epochs']):
             model.train()
     
