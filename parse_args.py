@@ -54,12 +54,16 @@ def collect_args():
                                  # imdb
                                  'imdb_baseline', 
                                  'imdb_sampling',
-                                 'imdb_domain_discriminative',
+                                 'imdb_domain_discriminative0',
+                                 'imdb_domain_discriminative1',
+                                 'imdb_domain_discriminative2',
+                                 'imdb_domain_discriminative3',
+                                 'imdb_domain_discriminative4',
                                  'imdb_domain_independent',
                                  'imdb_uniconf_adv',
                                  'imdb_gradproj_adv',
                                 ])
-    
+    parser.add_argument('--train_data', type=str, default='imdb_tr_soft.txt')
     parser.add_argument('--experiment_name', type=str, default='cifar_color')
     parser.add_argument('--no_cuda', dest='cuda', action='store_false')
     parser.add_argument('--random_seed', type=int, default=0)
@@ -93,7 +97,7 @@ def create_exerpiment_setting(opt):
     elif opt['experiment'].startswith('imdb'):
         opt['device'] = torch.device('cuda' if opt['cuda'] else 'cpu')
         opt['print_freq'] = 50
-        opt['batch_size'] = 8
+        opt['batch_size'] = 16
         opt['total_epochs'] = 200
         opt['save_folder'] = os.path.join('record/'+opt['experiment'], 
                                           opt['experiment_name'])
@@ -525,7 +529,18 @@ def create_exerpiment_setting(opt):
     elif opt['experiment'] == 'imdb_baseline':
         opt['output_dim'] = 8
         data_setting = {
-            'train_data_path': './data/imdb_tr_hard08.txt',
+            'train_data_path': opt['train_data'],
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_core.ImdbModel(opt)
+
+    elif opt['experiment'] == 'imdb_sampling':
+        opt['output_dim'] = 8
+        data_setting = {
+            'train_data_path': opt['train_data'],
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -533,12 +548,64 @@ def create_exerpiment_setting(opt):
         opt['data_setting'] = data_setting
         model = models.imdb_core.ImdbModel(opt)
         
-    elif opt['experiment'] == 'imdb_domain_discriminative':
+    elif opt['experiment'] == 'imdb_domain_discriminative0':
         opt['output_dim'] = 16
-        opt['prior_shift_weight'] = [1/4, 1/4, 1/4, 1/4, 1/6, 1/6, 1/6, 1/6]+\
-                                    [1/6, 1/6, 1/6, 1/6, 1/4, 1/4, 1/4, 1/4]
+        opt['prior_shift_weight'] = [1/3, 1/3, 1/3, 1/3, 1/7, 1/7, 1/7, 1/7]+\
+                                    [1/7, 1/7, 1/7, 1/7, 1/3, 1/3, 1/3, 1/3]
         data_setting = {
-            'train_data_path': './data/imdb_tr_hard08.txt',
+            'train_data_path': opt['train_data'],
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_domain_discriminative.ImdbDomainDiscriminative(opt)
+    
+    elif opt['experiment'] == 'imdb_domain_discriminative1':
+        opt['output_dim'] = 16
+        opt['prior_shift_weight'] = [1/1, 1/1, 1/6, 1/6, 1/6, 1/6, 1/6, 1/6]+\
+                                    [1/9, 1/9, 1/4, 1/4, 1/4, 1/4, 1/4, 1/4]
+        data_setting = {
+            'train_data_path': opt['train_data'],
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_domain_discriminative.ImdbDomainDiscriminative(opt)
+
+    elif opt['experiment'] == 'imdb_domain_discriminative2':
+        opt['output_dim'] = 16
+        opt['prior_shift_weight'] = [1/6, 1/6, 1/1, 1/1, 1/6, 1/6, 1/6, 1/6]+\
+                                    [1/4, 1/4, 1/9, 1/9, 1/4, 1/4, 1/4, 1/4]
+        data_setting = {
+            'train_data_path': opt['train_data'],
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_domain_discriminative.ImdbDomainDiscriminative(opt)
+
+    elif opt['experiment'] == 'imdb_domain_discriminative3':
+        opt['output_dim'] = 16
+        opt['prior_shift_weight'] = [1/6, 1/6, 1/6, 1/6, 1/1, 1/1, 1/6, 1/6]+\
+                                    [1/4, 1/4, 1/4, 1/4, 1/9, 1/9, 1/4, 1/4]
+        data_setting = {
+            'train_data_path': opt['train_data'],
+            'test_male_path': './data/imdb_te_m.txt',
+            'test_female_path': './data/imdb_te_f.txt',
+            'augment': True
+        }
+        opt['data_setting'] = data_setting
+        model = models.imdb_domain_discriminative.ImdbDomainDiscriminative(opt)
+
+    elif opt['experiment'] == 'imdb_domain_discriminative4':
+        opt['output_dim'] = 16
+        opt['prior_shift_weight'] = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6, 1/1, 1/1]+\
+                                    [1/4, 1/4, 1/4, 1/4, 1/4, 1/4, 1/9, 1/9]
+        data_setting = {
+            'train_data_path': opt['train_data'],
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -549,7 +616,7 @@ def create_exerpiment_setting(opt):
     elif opt['experiment'] == 'imdb_domain_independent':
         opt['output_dim'] = 16
         data_setting = {
-            'train_data_path': './data/imdb_tr_hard08.txt',
+            'train_data_path': opt['train_data'],
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -564,7 +631,7 @@ def create_exerpiment_setting(opt):
         opt['alpha'] = 1.
         
         data_setting = {
-            'train_data_path': './data/imdb_tr_hard08.txt',
+            'train_data_path': opt['train_data'],
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
@@ -587,7 +654,7 @@ def create_exerpiment_setting(opt):
         opt['alpha'] = 1.
         
         data_setting = {
-            'train_data_path': './data/imdb_tr_hard08.txt',
+            'train_data_path': opt['train_data'],
             'test_male_path': './data/imdb_te_m.txt',
             'test_female_path': './data/imdb_te_f.txt',
             'augment': True
